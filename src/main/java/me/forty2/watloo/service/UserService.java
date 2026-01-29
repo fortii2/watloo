@@ -13,14 +13,21 @@ public class UserService {
     private final UserRepository userRepository;
 
     public void syncUser(User user) {
-        BotUser botUser = BotUser.builder()
-                .id(user.getId())
-                .firstName(user.getFirstName())
-                .lastName(user.getLastName())
-                .username(user.getUserName())
-                .languageCode(user.getLanguageCode())
-                .build();
+        userRepository.save(getOne(user));
+    }
 
+    public BotUser getOne(User user) {
+        return userRepository.findById(user.getId())
+                .orElseGet(() -> BotUser.builder()
+                        .id(user.getId())
+                        .firstName(user.getFirstName())
+                        .lastName(user.getLastName())
+                        .username(user.getUserName())
+                        .languageCode(user.getLanguageCode())
+                        .build());
+    }
+
+    public void save(BotUser botUser){
         userRepository.save(botUser);
     }
 }
