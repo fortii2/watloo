@@ -5,6 +5,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import me.forty2.watloo.enums.UserState;
 import org.hibernate.annotations.CreationTimestamp;
 
 import java.sql.Timestamp;
@@ -25,6 +26,11 @@ public class BotUser {
     private String username;
 
     private String languageCode;
+
+    private String boundTerm;
+
+    @Enumerated(EnumType.STRING)
+    private UserState userState;
 
     @CreationTimestamp
     @Column(updatable = false)

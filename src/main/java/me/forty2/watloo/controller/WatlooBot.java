@@ -1,7 +1,7 @@
 package me.forty2.watloo.controller;
 
 import lombok.extern.slf4j.Slf4j;
-import me.forty2.watloo.service.MessageService;
+import me.forty2.watloo.service.MessageRouter;
 import me.forty2.watloo.service.UserService;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
@@ -24,17 +24,17 @@ public class WatlooBot implements SpringLongPollingBot, LongPollingSingleThreadU
 
     private final UserService userService;
 
-    private final MessageService messageService;
+    private final MessageRouter messageRouter;
 
 
     public WatlooBot(@Value("${telegram.bot.token}") String token,
                      UserService userService,
-                     MessageService messageService) {
+                     MessageRouter messageRouter) {
 
         this.token = token;
         this.telegramClient = new OkHttpTelegramClient(getBotToken());
         this.userService = userService;
-        this.messageService = messageService;
+        this.messageRouter = messageRouter;
     }
 
     @Override
@@ -50,13 +50,13 @@ public class WatlooBot implements SpringLongPollingBot, LongPollingSingleThreadU
     @Override
     public void consume(Update update) {
         if (update.hasMessage() && update.getMessage().hasText()) {
-
             userService.syncUser(update.getMessage().getFrom());
 
             SendMessage handled =
-                    messageService.handle(
+                    messageRouter.router(
                             update.getMessage().getChatId(),
-                            update.getMessage().getText()
+                            update.getMessage().getText(),
+                            update.getMessage().getFrom()
                     );
 
             try {
